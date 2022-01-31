@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <section id="form"><!--form-->
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <div class="signup-form"><!--sign up form-->
+                        <h2>ثبت نام کاربـر جدیـد</h2>
+                        <form action="{{ url_for('user.register_user') }}" method="post" enctype="multipart/form-data">
+                            {{ form.hidden_tag() }}
+                            {{ form.username(placeholder='نام کاربری') }}
+                            {{ form.email_address(placeholder='ایمیل') }}
+                            {{ form.first_name(placeholder='نام') }}
+                            {{ form.last_name(placeholder='نام خانوادگی') }}
+                            {{ form.password1(placeholder='کلمه عبور') }}
+                            {{ form.password2(placeholder='تکرار کلمه عبور') }}
+                            {{ form.image(placeholder='تصویر پروفایل') }}
+                            <button class='btn btn-default' type="submit">ثبت نام</button>
+                        </form>
+                    </div><!--/sign up form-->
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

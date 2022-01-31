@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Title</title>
+    {% include 'shared/_HeaderRefrences.html' %}
+</head>
+<body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% include 'shared/header.html' %}
+{% block content %}
+
+{% endblock %}
+
+{% include 'shared/footer.html' %}
+{% include 'shared/_FooterRefrences.html' %}
+</body>
+</html>
