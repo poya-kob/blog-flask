@@ -33,12 +33,14 @@ def add_post():
                         category=got_cat,
                         image=post_form.image.data)
         got_cat.blogs.append(new_blog)
-        db.session.add(new_blog)
-        db.session.commit()
-
-        if not post_form.errors:
-            for error in post_form.errors:
-                flash(error, category='danger')
+        # db.session.add(new_blog)
+        # db.session.commit()
+        new_blog.save()
+        flash('پست با موفقیت ایجاد شد', category='success')
+        post_form.data.popitem()
+    if post_form.errors:
+        for error in post_form.errors:
+            flash(error, category='danger')
     return render_template('blog/add_blog_post.html', form=post_form)
 
 

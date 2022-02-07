@@ -1,6 +1,11 @@
 import datetime
 
+from flask_sqlalchemy import models_committed
+
 from app_bone import db
+from .signals import send_mail
+
+models_committed.connect(send_mail)
 
 
 class Category(db.Model):
@@ -23,6 +28,15 @@ class Blog(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     category = db.relationship('Category', backref=db.backref('blogs'), lazy=True)
     image = db.Column(db.String(30), nullable=True)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        # models_committed.send(self)
+        return self
+
+    def __repr__(self):
+        return f"<Blog>: {self.title}"
 
 
 class Comment(db.Model):
