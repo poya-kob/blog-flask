@@ -32,7 +32,7 @@ class Blog(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
-        # models_committed.send(self)
+        models_committed.send(self)
         return self
 
     def __repr__(self):
