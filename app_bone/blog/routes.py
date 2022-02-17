@@ -4,8 +4,7 @@ from flask_login import login_required
 from app_bone import db
 from .models import Blog, Category
 from .forms import AddPost, AddCat
-
-blog = Blueprint('blog', __name__, template_folder='../../templates')
+from . import blog
 
 
 @blog.route('/')
