@@ -11,12 +11,16 @@ models_committed.connect(send_mail)
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(length=40), unique=True, nullable=False)
-
-    # parent_id = db.Column(db.Integer, db.ForeignKey('children.id'), nullable=True)
-    # children = db.relationship('Category', lazy=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
+    parent = db.relationship(lambda: Category, lazy=True, remote_side=id, backref=db.backref('sub_category'))
 
     def __repr__(self):
         return self.name
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
 
 
 class Blog(db.Model):
@@ -24,7 +28,6 @@ class Blog(db.Model):
     title = db.Column(db.String(length=60), unique=True, nullable=False)
     body = db.Column(db.Text, nullable=False)
     created_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
-    # lower case because of table name
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     category = db.relationship('Category', backref=db.backref('blogs'), lazy=True)
     image = db.Column(db.String(30), nullable=True)
@@ -46,3 +49,8 @@ class Comment(db.Model):
     blog = db.relationship('Blog', backref='comments', lazy=True)
     body = db.Column(db.Text, nullable=False)
     created_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self

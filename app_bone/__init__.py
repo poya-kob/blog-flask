@@ -8,6 +8,7 @@ from flask_mail import Mail
 from celery import Celery
 
 from .celery_conf import init_celery
+from .test_middleware import Middleware, middleware_func
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -28,12 +29,17 @@ def create_app(config_class=Config, **kwargs):
     mail.init_app(app)
     if kwargs.get("celery"):
         init_celery(kwargs.get("celery"), app)
-
+    # middleware
+    app.wsgi_app = Middleware(app.wsgi_app)
+    app.before_request_funcs = {
+        'blog': [middleware_func, ]
+    }
     # bluePrints
     from app_bone.blog.routes import blog
     from app_bone.account.routes import user
     app.register_blueprint(blog)
     app.register_blueprint(user)
+
     return app
 
 

@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, flash
+from flask import render_template, flash
 from flask_login import login_required
 
 from app_bone import db
@@ -10,8 +10,10 @@ from . import blog
 @blog.route('/')
 def blog_list():
     blogs = Blog.query.all()
-
-    return render_template('blog/blog_list.html', blogs=blogs)
+    categories = Category.query.all()
+    # middleware test
+    # print(request.salam)
+    return render_template('blog/blog_list.html', blogs=blogs, categories=categories)
 
 
 @blog.route('/<int:id>/')
