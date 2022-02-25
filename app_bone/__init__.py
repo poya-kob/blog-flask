@@ -7,6 +7,9 @@ from flask_ckeditor import CKEditor
 from flask_mail import Mail
 from celery import Celery
 
+from .celery_conf import init_celery
+from .test_middleware import Middleware, middleware_func
+
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
@@ -14,7 +17,7 @@ ck_editor = CKEditor()
 mail = Mail()
 
 
-def create_app(config_class=Config):
+def create_app(config_class=Config, **kwargs):
     app = Flask(__name__, static_folder='../static')
     app.config.from_object(config_class)
 
@@ -24,36 +27,26 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     ck_editor.init_app(app)
     mail.init_app(app)
-
+    if kwargs.get("celery"):
+        init_celery(kwargs.get("celery"), app)
+    # middleware
+    app.wsgi_app = Middleware(app.wsgi_app)
+    app.before_request_funcs = {
+        'blog': [middleware_func, ]
+    }
     # bluePrints
     from app_bone.blog.routes import blog
     from app_bone.account.routes import user
     app.register_blueprint(blog)
     app.register_blueprint(user)
+
     return app
 
 
-def make_celery(app=None):
-    app = app or create_app()
-    async_celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_BROKER_URL'],
-        broker=app.config['CELERY_RESULT_BACKEND']
-    )
-
-    TaskBase = async_celery.Task
-
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-
-    async_celery.Task = ContextTask
-    async_celery.conf.update(app.config)
-
-    return async_celery
+def make_celery(app_name=__name__):
+    backend = "redis://localhost:6379/0"
+    broker = backend.replace("0", "1")
+    return Celery(app_name, backend=backend, broker=broker)
 
 
-# app_celery = make_celery()
+celery = make_celery()

@@ -1,18 +1,21 @@
-from flask import render_template, Blueprint, flash
+from flask import render_template, flash, request
 from flask_login import login_required
 
 from app_bone import db
 from .models import Blog, Category
 from .forms import AddPost, AddCat
-
-blog = Blueprint('blog', __name__, template_folder='../../templates')
+from . import blog
 
 
 @blog.route('/')
 def blog_list():
-    blogs = Blog.query.all()
-
-    return render_template('blog/blog_list.html', blogs=blogs)
+    # blogs = Blog.query.all()
+    categories = Category.query.all()
+    # middleware test
+    # print(request.salam)
+    page = request.args.get('page', default=1, type=int)
+    blogs = Blog.query.paginate(page, per_page=3)
+    return render_template('blog/blog_list.html', blogs=blogs, categories=categories)
 
 
 @blog.route('/<int:id>/')
