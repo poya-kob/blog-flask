@@ -1,5 +1,8 @@
-from flask import render_template, flash, request
+import os
+
+from flask import render_template, flash, request, current_app
 from flask_login import login_required
+from werkzeug.utils import secure_filename
 
 from app_bone import db
 from .models import Blog, Category
@@ -14,7 +17,7 @@ def blog_list():
     # middleware test
     # print(request.salam)
     page = request.args.get('page', default=1, type=int)
-    blogs = Blog.query.paginate(page, per_page=3)
+    blogs = Blog.query.paginate(page, per_page=50)
     return render_template('blog/blog_list.html', blogs=blogs, categories=categories)
 
 
@@ -30,11 +33,16 @@ def add_post():
     post_form = AddPost()
     post_form.category.query = Category.query.all()
     if post_form.validate_on_submit():
+        image = request.files.get('image', default=None)
+        if image.filename is not "":
+            image.save(os.path.join(current_app.config.get('UPLOAD_DIR'), secure_filename(image.filename)))
+
         got_cat = Category.query.get(int(post_form.category.raw_data[0]))
         new_blog = Blog(title=post_form.title.data,
                         body=post_form.body.data,
                         category=got_cat,
-                        image=post_form.image.data)
+                        image=image.filename if image.filename is not "" else None)
+
         got_cat.blogs.append(new_blog)
         # db.session.add(new_blog)
         # db.session.commit()
