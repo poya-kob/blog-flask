@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from app_bone.config import Config
 from flask_bcrypt import Bcrypt
@@ -39,6 +39,11 @@ def create_app(config_class=Config, **kwargs):
     from app_bone.account.routes import user
     app.register_blueprint(blog)
     app.register_blueprint(user)
+
+    # send media path
+    @app.route('/<path:filename>')
+    def media_url(filename):
+        return send_from_directory(app.config['UPLOAD_DIR'], filename, as_attachment=True)
 
     return app
 

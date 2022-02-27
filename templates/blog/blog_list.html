@@ -24,9 +24,15 @@
 										<i class="fa fa-star-half-o"></i>
 								</span>
                                 </div>
-                                <a href="">
-                                    <img src="{{ url_for('static',filename='images/blog/blog-one.jpg') }}" alt="">
-                                </a>
+                                {% if blog.image %}
+                                    <a href="">
+                                        <img src="{{ url_for('media_url',filename=blog.image) }}" alt="">
+                                    </a>
+                                {% else %}
+                                    <a href="">
+                                        <img src="{{ url_for('static',filename='images/blog/blog-one.jpg') }}" alt="">
+                                    </a>
+                                {% endif %}
                                 <p>{{ blog.body [:250]|safe }} ...</p>
                                 <a class="btn btn-primary" href="{{ url_for('blog.blog_detail',id=blog.id) }}">ادامـه
                                     مطلب</a>
