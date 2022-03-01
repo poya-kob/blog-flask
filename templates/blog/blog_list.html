@@ -13,8 +13,9 @@
                                 <div class="post-meta">
                                     <ul>
                                         <li><i class="fa fa-user"></i> {{ blog.category.name }}</li>
-                                        <li><i class="fa fa-clock-o"></i> 17:20 ب.ظ</li>
+                                        <li><i class="fa fa-clock-o"></i></li>
                                         <li><i class="fa fa-calendar"></i> 28 تیـر 1397</li>
+                                        {{ moment(blog.created_date).fromNow() }}
                                     </ul>
                                     <span>
 										<i class="fa fa-star"></i>

@@ -7,6 +7,7 @@ from flask_ckeditor import CKEditor
 from flask_mail import Mail
 from celery import Celery
 from flask_marshmallow import Marshmallow
+from flask_moment import Moment
 
 from .celery_conf import init_celery
 from .test_middleware import Middleware, middleware_func
@@ -17,6 +18,7 @@ login_manager = LoginManager()
 ck_editor = CKEditor()
 mail = Mail()
 ma = Marshmallow()
+moment = Moment()
 
 
 def create_app(config_class=Config, **kwargs):
@@ -32,6 +34,7 @@ def create_app(config_class=Config, **kwargs):
     if kwargs.get("celery"):
         init_celery(kwargs.get("celery"), app)
     ma.init_app(app)
+    moment.init_app(app)
     # middleware
     app.wsgi_app = Middleware(app.wsgi_app)
     app.before_request_funcs = {
