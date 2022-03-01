@@ -4,6 +4,7 @@ from flask_sqlalchemy import models_committed
 
 from app_bone import db
 from .signals import send_mail
+from .mixins import ModelMixin
 
 models_committed.connect(send_mail)
 
@@ -23,7 +24,7 @@ class Category(db.Model):
         return self
 
 
-class Blog(db.Model):
+class Blog(db.Model, ModelMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(length=60), unique=True, nullable=False)
     body = db.Column(db.Text, nullable=False)
@@ -32,11 +33,11 @@ class Blog(db.Model):
     category = db.relationship('Category', backref=db.backref('blogs'), lazy=True)
     image = db.Column(db.String(30), nullable=True)
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-        models_committed.send(self)
-        return self
+    # def save(self):
+    #     db.session.add(self)
+    #     db.session.commit()
+    #     models_committed.send(self)
+    #     return self
 
     def __repr__(self):
         return f"<Blog>: {self.title}"

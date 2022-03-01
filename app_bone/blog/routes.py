@@ -3,6 +3,7 @@ import os
 from flask import render_template, flash, request, current_app
 from flask_login import login_required
 from werkzeug.utils import secure_filename
+from sqlalchemy import desc
 
 from app_bone import db
 from .models import Blog, Category
@@ -17,7 +18,7 @@ def blog_list():
     # middleware test
     # print(request.salam)
     page = request.args.get('page', default=1, type=int)
-    blogs = Blog.query.paginate(page, per_page=50)
+    blogs = Blog.query.order_by(desc(Blog.id)).paginate(page, per_page=5)
     return render_template('blog/blog_list.html', blogs=blogs, categories=categories)
 
 
